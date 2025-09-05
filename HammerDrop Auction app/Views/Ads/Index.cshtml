@@ -1,0 +1,163 @@
+﻿@model IEnumerable<HammerDrop_Auction_app.Entities.Ad>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Hello, @User.Identity?.Name</h4>
+    <div class="d-flex align-items-center gap-2">
+        @if (User.Identity?.IsAuthenticated ?? false)
+        {
+            <a asp-controller="Ads" asp-action="EndedAuctions" class="btn btn-secondary me-2">
+                <i class="bi bi-clock-history"></i> Ended Auctions
+            </a>
+            <a asp-controller="Category" asp-action="Index" class="btn btn-success">
+                <i class="bi bi-plus"></i> Sell
+            </a>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="mb-0">
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+        }
+        else
+        {
+            <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Login</a>
+        }
+    </div>
+</div>
+
+@* @if (User.Identity?.IsAuthenticated ?? false)
+{
+    <p>
+        <a asp-action="Create" class="btn btn-primary mb-3">Create New Ad</a>
+    </p>
+} *@
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-@(item.IsAuction ? "warning" : "secondary") shadow-sm">
+
+                @* Image Carousel or single image *@
+                @if (item.Images?.Count >= 2)
+                {
+                    var imagesToShow = item.Images.Take(5).ToList();
+                    <div id="carousel-@item.Id" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            @for (int i = 0; i < imagesToShow.Count; i++)
+                            {
+                                <div class="carousel-item @(i == 0 ? "active" : "")">
+                                    <img src="~/images/ads/@imagesToShow[i].ImageName"
+                                         class="d-block w-100"
+                                         alt="Ad Image"
+                                         style="height: 200px; object-fit: cover;" />
+                                </div>
+                            }
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-@item.Id" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carousel-@item.Id" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                }
+                else if (item.Images?.Count == 1)
+                {
+                    <img src="~/images/ads/@item.Images.First().ImageName"
+                         class="card-img-top"
+                         style="height: 200px; object-fit: cover;"
+                         alt="Ad Image" />
+                }
+                else
+                {
+                    <img src="~/images/no-image.png"
+                         class="card-img-top"
+                         style="height: 200px; object-fit: cover;"
+                         alt="No Image" />
+                }
+
+                @* Card Body *@
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">
+                        @item.Title
+                        @if (item.IsAuction)
+                        {
+                            <span class="badge bg-warning text-dark ms-2">Auction</span>
+                        }
+                    </h5>
+
+                    @if (item.IsAuction)
+                    {
+                        <p class="text-danger fw-bold mb-1">Starting Bid: $@item.BasePrice</p>
+                        @if (User.HasClaim("Permission", "Admin") && item.ReservedPrice.HasValue)
+                        {
+                            <p class="mb-1"><strong>Reserve Price:</strong> $@item.ReservedPrice</p>
+                        }
+
+                        @if (item.AuctionEndTime.HasValue)
+                        {
+                            <p class="mb-1 text-danger fw-bold">
+                                Auction Ends In:
+                                <span class="countdown" data-end="@item.AuctionEndTime.Value.ToString("yyyy-MM-ddTHH:mm:ss")"></span>
+                            </p>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-success fw-bold mb-1">$@item.Price</p>
+                    }
+
+                   @*  <p class="text-muted" style="white-space: pre-line;">
+                        @Html.Raw(string.Join("<br/>• ",
+                        item.Description?.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0]))
+                     </p> *@
+
+                <p class="mb-1"><strong>Location:</strong> @item.Country.name, @item.State.name, @item.City.name</p>
+                @if (item.ShowPhoneNumberInAds)
+                    {
+                        <p class="mb-0"><strong>Contact:</strong> @item.MobilePhoneNumber</p>
+                    }
+                </div>
+
+                @* Card Footer Buttons *@
+                <div class="card-footer text-muted d-flex justify-content-between">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                    <div>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function updateCountdown() {
+            document.querySelectorAll('.countdown').forEach(el => {
+                let endTime = new Date(el.dataset.end).getTime();
+                let now = new Date().getTime();
+                let diff = endTime - now;
+
+                if (diff <= 0) {
+                    el.innerHTML = "Auction Ended";
+                    return;
+                }
+
+                let days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                let hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                el.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            });
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+}

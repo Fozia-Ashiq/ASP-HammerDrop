@@ -1,0 +1,85 @@
+﻿@model IEnumerable<HammerDrop_Auction_app.Entities.Product>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary mb-3">Create New</a>
+</p>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                @if (item.Images != null && item.Images.Count >= 2)
+                {
+                    <div id="carousel-@item.Id" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            @{
+                                var imagesToShow = item.Images.Take(5).ToList();
+                            }
+                            @for (int i = 0; i < imagesToShow.Count; i++)
+                            {
+                                <div class="carousel-item @(i == 0 ? "active" : "")">
+                                    <img src="~/images/product/@imagesToShow[i].ImageName" class="d-block w-100" alt="Product Image" style="height: 200px; object-fit: cover;" />
+                                </div>
+                            }
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-@item.Id" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carousel-@item.Id" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                }
+                else if (item.Images != null && item.Images.Count == 1)
+                {
+                    <img src="~/images/product/@item.Images.First().ImageName" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Product Image" />
+                }
+                else
+                {
+                    <img src="~/images/no-image.png" class="card-img-top" style="height: 200px; object-fit: cover;" alt="No Image" />
+                }
+
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">@item.Title</h5>
+
+                    <p class="card-text text-muted" style="white-space: pre-line;">
+                        @Html.Raw(
+                        string.Join("<br/>• ",
+                        item.Description?.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0]
+                        )
+                                        )
+                </p>
+
+@*                 <p class="card-text mt-2">
+                    <strong>Price Options:</strong><br />
+                    <ul class="list-unstyled ms-3">
+                        <li>• 8/128 = 138,000/-</li>
+                        <li>• 12/156 = 152,000/-</li>
+                        <li>• 12/512 = 160,000/-</li>
+                    </ul>
+                </p> *@
+
+                <p class="card-text"><strong>Location:</strong> @item.Country.name, @item.State.name, @item.City.name</p>
+
+                @if (item.ShowPhoneNumberInAds)
+                    {
+                        <p class="card-text"><strong>Contact:</strong> @item.MobilePhoneNumber</p>
+                    }
+                </div>
+
+                <div class="card-footer text-muted">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+}

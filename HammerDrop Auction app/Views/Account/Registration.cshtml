@@ -1,0 +1,114 @@
+﻿@model HammerDrop_Auction_app.Models.RegistrationViewModel
+
+@{
+    ViewData["Title"] = "Registration";
+}
+
+<h1>Registration</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Registration" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+@*             @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+            }
+
+            @if (ViewBag.Message != null)
+            {
+                <div class="text-success">@ViewBag.Message</div>
+            } *@
+
+            <div class="form-group">
+                <label asp-for="FirstName"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LastName"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <div class="input-group">
+                    <input asp-for="Email" class="form-control" id="emailInput" />
+                    <button type="button" class="btn btn-secondary" id="sendCodeBtn">Send Code</button>
+                </div>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Enter Code</label>
+                <input asp-for="VerificationCode" class="form-control" />
+                <span asp-validation-for="VerificationCode" class="text-danger"></span>
+
+                <div class="text-success" id="codeMessage">
+                    @TempData["CodeMessage"]
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="UserName"></label>
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" type="password" class="form-control" value="@Model?.Password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ConfirmPassword"></label>
+                <input asp-for="ConfirmPassword" type="password" class="form-control" value="@Model?.ConfirmPassword" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Register" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    Already have an account? <a asp-action="LogIn">Go To LogIn</a>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $("#sendCodeBtn").click(function () {
+            var email = $("#emailInput").val();
+
+            if (email === '') {
+                $("#codeMessage").text("Please enter an email first.").css("color", "red");
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("SendCode", "Account")',
+                method: 'POST',
+                data: { email: email },
+                success: function (response) {
+                    if (response.success) {
+                        $("#codeMessage").text(response.message).css("color", "green");
+                    } else {
+                        $("#codeMessage").text(response.message).css("color", "red");
+                    }
+                },
+                error: function () {
+                    $("#codeMessage").text("An unexpected error occurred.").css("color", "red");
+                }
+            });
+        });
+    </script>
+}
+

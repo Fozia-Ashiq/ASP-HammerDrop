@@ -1,0 +1,17 @@
+﻿@model IEnumerable<HammerDrop_Auction_app.Entities.Subcategory>
+
+<h4>Choose a Subcategory</h4>
+
+<div class="row">
+    @foreach (var sub in Model)
+    {
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card subcategory-card" style="cursor:pointer;">
+                <img src="~/images/subcategory/@sub.ImageName" alt="@sub.Title" class="card-img-top mx-auto" style="height: 100px; width: auto; object-fit: contain;" />
+                <div class="card-body text-center">
+                    <h5 class="card-title">@sub.Title</h5>
+                </div>
+            </div>
+        </div>
+    }
+</div>

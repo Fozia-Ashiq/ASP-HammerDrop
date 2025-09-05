@@ -1,0 +1,163 @@
+﻿@model HammerDrop_Auction_app.Entities.Product
+
+@{
+    ViewData["Title"] = "Edit Product";
+}
+
+<h4>Edit Product</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Edit" enctype="multipart/form-data" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group">
+                <label>Subcategory</label>
+                <input type="text" class="form-control"
+                       value="@ViewBag.SubcategoryTitle" readonly />
+                <input type="hidden" asp-for="SubcategoryId" />
+            </div>
+
+            <!-- Title -->
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <!-- Brand Name -->
+            <div class="form-group">
+                <label asp-for="BrandName" class="control-label"></label>
+                <input asp-for="BrandName" class="form-control" />
+                <span asp-validation-for="BrandName" class="text-danger"></span>
+            </div>
+
+            <!-- Country -->
+            <div class="form-group">
+                <label asp-for="CountryId" class="control-label"></label>
+                <select asp-for="CountryId" class="form-control" asp-items="ViewBag.CountryId">
+                    <option value="">-- Select Country --</option>
+                </select>
+                <span asp-validation-for="CountryId" class="text-danger"></span>
+            </div>
+
+            <!-- State -->
+            <div class="form-group">
+                <label asp-for="StateId" class="control-label"></label>
+                <select asp-for="StateId" class="form-control" asp-items="ViewBag.StateId">
+                    <option value="">-- Select State --</option>
+                </select>
+                <span asp-validation-for="StateId" class="text-danger"></span>
+            </div>
+
+            <!-- City -->
+            <div class="form-group">
+                <label asp-for="CityId" class="control-label"></label>
+                <select asp-for="CityId" class="form-control" asp-items="ViewBag.CityId">
+                    <option value="">-- Select City --</option>
+                </select>
+                <span asp-validation-for="CityId" class="text-danger"></span>
+            </div>
+
+            <!-- Price -->
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            <!-- Posted By -->
+            <div class="form-group">
+                <label for="UserName">Posted By</label>
+                <input type="text" id="UserName" name="Name"
+                       value="@Model.Name" class="form-control" readonly />
+            </div>
+
+            <!-- Mobile Phone Number -->
+            <div class="form-group">
+                <label asp-for="MobilePhoneNumber" class="control-label"></label>
+                <input asp-for="MobilePhoneNumber" class="form-control" />
+                <span asp-validation-for="MobilePhoneNumber" class="text-danger"></span>
+            </div>
+
+            <!-- Show Phone Number in Ads -->
+            <div class="form-group form-check">
+                <input class="form-check-input" asp-for="ShowPhoneNumberInAds" />
+                <label class="form-check-label" asp-for="ShowPhoneNumberInAds"></label>
+            </div>
+            @if (Model.Images != null && Model.Images.Any())
+            {
+                <label>Existing Images:</label>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    @foreach (var img in Model.Images)
+                    {
+                        <img src="~/images/product/@img.ImageName" alt="Product Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px; margin-right: 10px;" />
+                    }
+                </div>
+            }
+
+            <!-- Image Upload (Add new images) -->
+            <div class="form-group">
+                <label>Upload New Images</label>
+                <input type="file" name="uploadedImages" multiple class="form-control" />
+                <small class="text-muted">You can select multiple images at once.</small>
+            </div>
+
+            <br />
+
+            <div class="form-group">
+                <input type="submit" value="Save Changes" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        $(document).ready(function () {
+            // When country changes, reload states
+            $('#CountryId').change(function () {
+                var countryId = $(this).val();
+                $('#StateId').empty().append('<option value="">-- Select State --</option>');
+                $('#CityId').empty().append('<option value="">-- Select City --</option>');
+                if (countryId) {
+                    $.getJSON('/Product/GetStatesByCountry?countryId=' + countryId, function (data) {
+                        $.each(data, function (i, state) {
+                            $('#StateId').append($('<option>', {
+                                value: state.id,
+                                text: state.name
+                            }));
+                        });
+                    });
+                }
+            });
+
+            // When state changes, reload cities
+            $('#StateId').change(function () {
+                var stateId = $(this).val();
+                $('#CityId').empty().append('<option value="">-- Select City --</option>');
+                if (stateId) {
+                    $.getJSON('/Product/GetCitiesByState?stateId=' + stateId, function (data) {
+                        $.each(data, function (i, city) {
+                            $('#CityId').append($('<option>', {
+                                value: city.id,
+                                text: city.name
+                            }));
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+}

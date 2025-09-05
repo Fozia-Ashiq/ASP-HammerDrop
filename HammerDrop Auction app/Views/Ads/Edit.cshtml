@@ -1,0 +1,202 @@
+﻿@model HammerDrop_Auction_app.Entities.Ad
+
+@{
+    ViewData["Title"] = "Edit Ad";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm rounded p-4">
+        <h4 class="card-title mb-3">Edit Your Ad</h4>
+        <hr />
+
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <!-- Hidden Id -->
+            <input type="hidden" asp-for="Id" />
+
+            <!-- Product Details -->
+            <h5 class="mb-3">Product Details</h5>
+            <div class="form-group mb-3">
+                <label>Subcategory</label>
+                <input type="text" class="form-control" value="@Model.Subcategory?.Title" readonly />
+                <input type="hidden" asp-for="SubcategoryId" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Title"></label>
+                <input asp-for="Title" class="form-control" placeholder="Enter product title" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Description"></label>
+                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Describe your product in detail"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="BrandName"></label>
+                <input asp-for="BrandName" class="form-control" placeholder="Enter brand name" />
+                <span asp-validation-for="BrandName" class="text-danger"></span>
+            </div>
+
+            <!-- Location -->
+            <h5 class="mb-3 mt-4">Location</h5>
+            <div class="form-group mb-3">
+                <label asp-for="CountryId"></label>
+                <select asp-for="CountryId" class="form-control" asp-items="ViewBag.CountryId"></select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="StateId"></label>
+                <select asp-for="StateId" class="form-control" asp-items="ViewBag.StateId"></select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="CityId"></label>
+                <select asp-for="CityId" class="form-control" asp-items="ViewBag.CityId"></select>
+            </div>
+
+            <!-- Sale Type & Pricing -->
+            <h5 class="mb-3 mt-4">Sale Type & Price</h5>
+            <div class="form-group mb-3">
+                <label><strong>How do you want to sell this product?</strong></label><br />
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-primary @(Model.IsAuction ? "active" : "")">
+                        <input type="radio" name="SaleType" value="auction" @(Model.IsAuction ? "checked" : "") /> Auction
+                        <span class="badge bg-warning text-dark">Bidders compete</span>
+                    </label>
+                    <label class="btn btn-outline-primary @(!Model.IsAuction ? "active" : "")">
+                        <input type="radio" name="SaleType" value="fixed" @(!Model.IsAuction ? "checked" : "") /> Fixed Price
+                        <span class="badge bg-success">Buy instantly</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="priceField" class="form-group mb-3" style="display:@(!Model.IsAuction ? "block" : "none")">
+                <label asp-for="Price"></label>
+                <input asp-for="Price" class="form-control" placeholder="Enter fixed price" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            <div id="auctionFields" style="display:@(Model.IsAuction ? "block" : "none")">
+                <div class="form-group mb-3">
+                    <label asp-for="BasePrice"></label>
+                    <input asp-for="BasePrice" class="form-control" placeholder="Enter base price" />
+                    <span asp-validation-for="BasePrice" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="ReservedPrice"></label>
+                    <input asp-for="ReservedPrice" class="form-control" placeholder="Enter reserved price" />
+                    <span asp-validation-for="ReservedPrice" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label>Auction Duration</label>
+                    <select name="AuctionDuration" class="form-control">
+                        <option value="1">1 Day</option>
+                        <option value="3">3 Days</option>
+                        <option value="5">5 Days</option>
+                        <option value="7">7 Days</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- User Info -->
+            <h5 class="mb-3 mt-4">Your Details</h5>
+            <div class="form-group mb-3">
+                <label for="UserName">Posted By</label>
+                <input type="text" id="UserName" name="UserName" value="@ViewBag.UserName" class="form-control" readonly />
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="MobilePhoneNumber"></label>
+                <input asp-for="MobilePhoneNumber" class="form-control" placeholder="Enter mobile number" />
+                <span asp-validation-for="MobilePhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group form-check mb-3">
+                <input class="form-check-input" asp-for="ShowPhoneNumberInAds" />
+                <label class="form-check-label" asp-for="ShowPhoneNumberInAds"></label>
+            </div>
+
+            <!-- File Upload -->
+            <div class="form-group mb-4">
+                <label>Existing Images</label>
+                <div>
+                    @if (Model.Images != null && Model.Images.Any())
+                    {
+                        foreach (var img in Model.Images)
+                        {
+                            <img src="~/images/ads/@img.ImageName" class="img-thumbnail m-1" style="max-height:150px;" />
+                        }
+                    }
+                    else
+                    {
+                        <p>No images uploaded yet.</p>
+                    }
+                </div>
+            </div>
+
+
+            <div class="form-group mb-4">
+                <label>Upload New Images</label>
+                <input type="file" name="uploadedImages" multiple class="form-control-file" id="uploadedImages" />
+                <small class="form-text text-muted">Select multiple images at once. New uploads will be added.</small>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div class="form-group mb-3">
+                <input type="submit" value="Update Ad" class="btn btn-primary btn-lg" />
+                <a asp-action="Index" asp-controller="Ads" class="btn btn-outline-secondary btn-lg ml-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        $(document).ready(function () {
+            // Location dropdown logic
+            $('#CountryId').change(function () {
+                var countryId = $(this).val();
+                $('#StateId').empty().append('<option value="">-- Select State --</option>');
+                $('#CityId').empty().append('<option value="">-- Select City --</option>');
+
+                if (countryId) {
+                    $.getJSON('/Ads/GetStatesByCountry?countryId=' + countryId, function (data) {
+                        $.each(data, function (i, state) {
+                            $('#StateId').append($('<option>', { value: state.id, text: state.name }));
+                        });
+                    });
+                }
+            });
+
+            $('#StateId').change(function () {
+                var stateId = $(this).val();
+                $('#CityId').empty().append('<option value="">-- Select City --</option>');
+
+                if (stateId) {
+                    $.getJSON('/Ads/GetCitiesByState?stateId=' + stateId, function (data) {
+                        $.each(data, function (i, city) {
+                            $('#CityId').append($('<option>', { value: city.id, text: city.name }));
+                        });
+                    });
+                }
+            });
+
+            // Sale type toggle
+            $('input[name="SaleType"]').change(function () {
+                if ($(this).val() === "auction") {
+                    $('#auctionFields').slideDown();
+                    $('#priceField').slideUp();
+                } else if ($(this).val() === "fixed") {
+                    $('#auctionFields').slideUp();
+                    $('#priceField').slideDown();
+                }
+            });
+        });
+    </script>
+}

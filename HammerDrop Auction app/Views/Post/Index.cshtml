@@ -1,0 +1,43 @@
+﻿ @model IEnumerable<HammerDrop_Auction_app.Entities.Category>
+
+<h2 class="text-center my-4">Post Your Ad</h2>
+<h4 class="mb-4">Choose a Category</h4>
+
+<div  class="row">
+    @foreach (var category in Model)
+    {
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card category-card" data-id="@category.Id" style="cursor:pointer;">
+                <img src="~/images/category/@category.ImageName" alt="@category.Title" class="card-img-top mx-auto" style="height: 100px; width: auto; object-fit: contain;" />
+                <div class="card-body text-center">
+                    <h5 class="card-title">@category.Title</h5>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+@* @model IEnumerable<HammerDrop_Auction_app.Entities.Category>
+
+<h2 class="text-center my-4">Post Your Ad</h2>
+<h4 class="mb-4">Choose a Category</h4>
+
+<div id="postContainer" class="row">
+    @foreach (var category in Model)
+    {
+        <div class="col-md-3 col-sm-6 mb-4">
+            <a asp-controller="SubCategory" asp-action="Index" asp-route-id="@category.Id" style="text-decoration:none; color:inherit;">
+                <div class="card category-card" data-id="@category.Id" style="cursor:pointer;">
+                    <img src="~/images/category/@category.ImageName"
+                         alt="@category.Title"
+                         class="card-img-top mx-auto"
+                         style="height: 100px; width: auto; object-fit: contain;" />
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@category.Title</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+</div> *@

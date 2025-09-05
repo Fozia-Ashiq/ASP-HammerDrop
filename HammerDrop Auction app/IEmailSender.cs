@@ -1,0 +1,7 @@
+﻿namespace HammerDrop_Auction_app
+{
+    public interface IEmailSender
+    {
+        Task SendEmailAsync(string email,string subject,string message);
+    }
+}

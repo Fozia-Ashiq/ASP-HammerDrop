@@ -1,0 +1,117 @@
+﻿@model HammerDrop_Auction_app.Entities.Ad
+@using System.Security.Claims
+
+
+<div class="row mt-4">
+    <!-- LEFT SIDE: IMAGE SLIDER -->
+    <div class="col-md-6">
+        <div id="mainImage">
+            <img src="~/images/ads/@Model.Images.FirstOrDefault()?.ImageName"
+                 class="img-fluid border" style="max-height:400px;" />
+        </div>
+
+        <div class="d-flex mt-2">
+            @foreach (var img in Model.Images)
+            {
+                <img src="~/images/ads/@img.ImageName"
+                     class="img-thumbnail me-2 thumb-img"
+                     style="width:80px;height:80px;cursor:pointer;" />
+            }
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <h3>@Model.Title</h3>
+        <p>@Model.Description</p>
+
+        @if (Model.IsAuction)
+        {
+            <h4>
+                Current Bid: <span class="text-success">$@ViewBag.HighestBid</span>
+            </h4>
+            <p>@ViewBag.BidsCount bids</p>
+
+            <p>
+                Ends in:
+                <span id="auction-timer" data-end="@Model.AuctionEndTime.Value.ToString("yyyy-MM-ddTHH:mm:ss")"></span>
+            </p>
+
+            @if (Model.IsAuction && Model.AuctionEndTime > DateTime.Now)
+            {
+                var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (loggedInUserId != Model.UserAccountId.ToString())
+                {
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bidModal">
+                        Place Bid
+                    </button>
+                }
+                else
+                {
+                    <p class="text-danger">You cannot bid on your own ad.</p>
+                }
+            }
+        }
+        else
+        {
+            <h4 class="text-success">Price: $@Model.Price</h4>
+        }
+    </div>
+</div>
+
+<!-- PLACE BID MODAL -->
+<div class="modal fade" id="bidModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-controller="Bids" asp-action="PlaceBid" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Place Your Bid</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="AdId" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label class="form-label">Your Bid Amount</label>
+                        <input type="number" step="0.01" min="@((decimal)ViewBag.HighestBid + 1)"
+                               name="Amount" class="form-control" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Submit Bid</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Thumbnail click = change main image
+        $(".thumb-img").click(function () {
+            var src = $(this).attr("src");
+            $("#mainImage img").attr("src", src);
+        });
+
+        // Auction countdown
+        function updateTimer() {
+            var end = new Date($("#auction-timer").data("end")).getTime();
+            var now = new Date().getTime();
+            var diff = end - now;
+
+            if (diff <= 0) {
+                $("#auction-timer").text("Auction ended");
+                return;
+            }
+
+            var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            var secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+            $("#auction-timer").text(days + "d " + hours + "h " + mins + "m " + secs + "s");
+        }
+
+        setInterval(updateTimer, 1000);
+    </script>
+}

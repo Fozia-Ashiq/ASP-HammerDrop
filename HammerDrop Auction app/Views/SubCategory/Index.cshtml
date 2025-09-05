@@ -1,0 +1,33 @@
+﻿@model IEnumerable<HammerDrop_Auction_app.Entities.Subcategory>
+
+<h2 class="text-center my-4">Subcategories for @ViewBag.CategoryTitle</h2>
+
+<p>
+    <a class="btn btn-primary mb-4" asp-action="Create" asp-route-categoryId="@ViewBag.CategoryId">Create New</a>
+</p>
+
+<div class="row">
+    @foreach (var subcategory in Model)
+    {
+        <div class="col-md-3 col-sm-6 mb-4">
+            <a asp-controller="Ads" asp-action="Create" asp-route-subcategoryId="@subcategory.Id" style="text-decoration:none; color:inherit;">
+                <div class="card h-100 text-center shadow-sm" style="cursor:pointer; border-radius:12px; overflow:hidden;">
+                    <div style="height: 180px; overflow:hidden;">
+                        <img src="~/images/subcategory/@subcategory.ImageName"
+                             alt="@subcategory.Title"
+                             class="w-100"
+                             style="height: 100%; object-fit: cover;" />
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">@subcategory.Title</h5>
+                    </div>
+                </div>
+            </a>
+            <div class="card-footer bg-white border-0 text-center mt-2">
+                <a asp-action="Edit" asp-route-id="@subcategory.Id" class="btn btn-sm btn-warning">Edit</a>
+                <a asp-action="Details" asp-route-id="@subcategory.Id" class="btn btn-sm btn-info">Details</a>
+                <a asp-action="Delete" asp-route-id="@subcategory.Id" class="btn btn-sm btn-danger">Delete</a>
+            </div>
+        </div>
+    }
+</div>

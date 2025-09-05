@@ -1,0 +1,21 @@
+﻿@model IEnumerable<HammerDrop_Auction_app.Entities.Category>
+
+<h2 class="text-center my-4">Post Your Ad</h2>
+
+<h4 class="mb-4">Choose a Category</h4>
+
+<div class="row">
+    @foreach (var category in Model)
+    {
+        <div class="col-md-3 col-sm-6 mb-4">
+            <a asp-controller="subcategory" asp-action="Index" asp-route-id="@category.Id" class="text-decoration-none text-dark">
+                <div class="card text-center shadow-sm h-100 p-3">
+                    <img src="~/images/category/@category.ImageName" alt="@category.Title" class="card-img-top mx-auto" style="height: 100px; width: auto; object-fit: contain;" />
+                    <div class="card-body">
+                        <h6 class="card-title">@category.Title</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+</div>
