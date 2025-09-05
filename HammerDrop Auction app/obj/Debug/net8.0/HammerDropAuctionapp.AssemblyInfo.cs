@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HammerDropAuctionapp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+42cf0b5639cb5f204b08a0c11d129137df1e7a78")]
 [assembly: System.Reflection.AssemblyProductAttribute("HammerDropAuctionapp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HammerDropAuctionapp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
